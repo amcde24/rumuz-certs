@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Certificate Verification</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap");
+
+        :root {
+            --navy: #112b47;
+            --orange: #f37021;
+            --text: #2e3b4f;
+            --deep-blue: #143d84;
+            --muted: #6d7787;
+            --bg: #f5f6f8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Barlow", "Segoe UI", sans-serif;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        .container {
+            width: min(1080px, calc(100% - 32px));
+            margin: 0 auto;
+        }
+
+        .topbar .container,
+        .navbar .container {
+            width: min(970px, calc(100% - 32px));
+        }
+
+        .topbar {
+            background: #fff;
+            border-bottom: 1px solid #e6eaf0;
+        }
+
+        .topbar-inner {
+            min-height: 98px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo {
+            display: block;
+            height: 61px;
+            max-width: min(350px, 62vw);
+            width: auto;
+            border: 1px solid #c8d0dc;
+            background: #fff;
+            object-fit: contain;
+        }
+
+        .contact-strip {
+            display: flex;
+            gap: 26px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .contact-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .contact-icon {
+            width: 18px;
+            height: 18px;
+            color: var(--orange);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 400;
+            margin-top: 1px;
+            flex-shrink: 0;
+        }
+
+        .contact-icon .fa {
+            font-size: 17px;
+            line-height: 1;
+        }
+
+        .contact-label {
+            margin: 0;
+            font-size: 14px;
+            color: #2d3f58;
+            font-weight: 500;
+            line-height: 1.1;
+        }
+
+        .contact-value {
+            margin: 2px 0 0;
+            color: #4f5f74;
+            font-size: 14px;
+            line-height: 1.3;
+        }
+
+        .navbar {
+            background: var(--navy);
+        }
+
+        .menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .menu a {
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            font-family: "Oswald", sans-serif;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 0.4px;
+            padding: 22px 15px;
+            line-height: 20px;
+        }
+
+        .menu a.active {
+            background: var(--orange);
+            position: relative;
+        }
+
+        .menu a.active::after {
+            content: "";
+            position: absolute;
+            left: 20px;
+            bottom: -10px;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 10px solid var(--orange);
+        }
+
+        .hero {
+            min-height: 230px;
+            color: #fff;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            background:
+                linear-gradient(rgba(7, 17, 33, 0.7), rgba(7, 17, 33, 0.7)),
+                repeating-linear-gradient(45deg, rgba(63, 93, 141, 0.24) 0 20px, rgba(18, 39, 71, 0.24) 20px 40px),
+                radial-gradient(circle at 20% 20%, #1f3a62, #0a1b2f 60%);
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: 45px;
+            font-weight: 800;
+        }
+
+        .crumb {
+            margin: 24px auto 0;
+            width: min(560px, calc(100% - 20px));
+            background: rgba(88, 95, 108, 0.72);
+            padding: 14px 16px;
+            border-radius: 2px;
+            font-size: 24px;
+            line-height: 1;
+            font-weight: 600;
+        }
+
+        .crumb span {
+            font-size: 24px;
+            opacity: 0.92;
+        }
+
+        .content {
+            background: #fff;
+            padding: 90px 0 80px;
+            text-align: center;
+        }
+
+        .content h2 {
+            margin: 0;
+            font-size: 40px;
+            color: var(--deep-blue);
+            font-weight: 800;
+            line-height: 1.06;
+        }
+
+        .status {
+            margin-top: 54px;
+            display: inline-block;
+            background: #1f9d55;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .meta {
+            margin-top: 8px;
+            font-size: 15px;
+            color: #4e5663;
+        }
+
+        .org-name {
+            margin: 28px auto 0;
+            font-size: 30px;
+            color: var(--deep-blue);
+            font-weight: 400;
+            letter-spacing: 0.4px;
+            max-width: 980px;
+            line-height: 1.18;
+        }
+
+        .org-address {
+            margin: 24px auto 0;
+            max-width: 900px;
+            color: #3d5b90;
+            font-size: 15px;
+            line-height: 1.3;
+            text-transform: uppercase;
+        }
+
+        .standard-label {
+            margin: 58px 0 0;
+            font-size: 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #111;
+        }
+
+        .standard-value {
+            margin: 18px 0 0;
+            font-size: 40px;
+            color: var(--deep-blue);
+            line-height: 1.08;
+            font-weight: 800;
+        }
+
+        .scope,
+        .details {
+            width: min(980px, calc(100% - 32px));
+            margin: 30px auto 0;
+            font-size: 15px;
+            line-height: 1.5;
+            color: #47546b;
+            text-align: left;
+        }
+
+        .details {
+            text-align: center;
+            color: #38465e;
+        }
+
+        .cert-number-wrap {
+            margin-top: 66px;
+            text-align: center;
+        }
+
+        .cert-number-wrap h3 {
+            margin: 0;
+            color: #121212;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .cert-number-wrap p {
+            margin: 10px 0 0;
+            color: #5f7fb0;
+            font-size: 15px;
+        }
+
+        .validity-panel {
+            width: min(980px, calc(100% - 32px));
+            margin: 40px auto 0;
+            border-left: 4px solid #e3e3e3;
+            padding: 10px 0 10px 22px;
+            text-align: left;
+        }
+
+        .validity-panel p {
+            margin: 0;
+            color: #333;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .validity-panel .status-line {
+            margin-top: 12px;
+            font-size: 20px;
+            color: #424242;
+        }
+
+        .status-pill {
+            display: inline-block;
+            margin-left: 8px;
+            background: #1f9d55;
+            color: #fff;
+            border-radius: 6px;
+            padding: 0 8px;
+            font-size: 0.72em;
+            font-weight: 700;
+            line-height: 1.2;
+            vertical-align: middle;
+        }
+
+        .validity-panel .note {
+            margin-top: 18px;
+            color: #ff2b1f;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .cta-band {
+            background: #163451;
+            color: #fff;
+            padding: 40px 0;
+        }
+
+        .cta-inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            text-align: center;
+        }
+
+        .cta-text {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        .cta-text small {
+            font-size: 0.72em;
+            font-weight: 600;
+        }
+
+        .cta-btn {
+            border: 0;
+            background: #fff;
+            color: #ef6c1f;
+            font-family: "Oswald", sans-serif;
+            font-size: 14px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            padding: 14px 34px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .footer-main {
+            background: #353535;
+            color: #d7d7d7;
+            padding: 72px 0 64px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1.45fr 1fr;
+            gap: 38px;
+        }
+
+        .footer-title {
+            margin: 0 0 20px;
+            color: #fff;
+            font-size: 18px;
+            text-transform: uppercase;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .footer-main p,
+        .footer-main li,
+        .footer-main a {
+            margin: 0;
+            color: #e2e2e2;
+            font-size: 14px;
+            line-height: 1.65;
+            text-decoration: none;
+        }
+
+        .footer-main .small {
+            font-size: 14px;
+            color: #ededed;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .link-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .link-list li::before {
+            content: "›";
+            color: var(--orange);
+            font-weight: 700;
+            margin-right: 8px;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 20px;
+        }
+
+        .newsletter-input {
+            width: 100%;
+            background: #fff;
+            border: 0;
+            padding: 14px 12px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .newsletter-btn {
+            margin-top: 16px;
+            border: 0;
+            background: #ef6c1f;
+            color: #fff;
+            font-family: "Oswald", sans-serif;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            padding: 12px 26px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .footer-bottom {
+            background: #123656;
+            color: #fff;
+            text-align: center;
+            padding: 18px 12px;
+            font-size: 14px;
+        }
+
+        .floating-mail {
+            position: fixed;
+            right: 0;
+            top: 42%;
+            width: 52px;
+            height: 52px;
+            border: 0;
+            background: #14b8b5;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            border-radius: 6px 0 0 6px;
+        }
+
+        .floating-top {
+            position: fixed;
+            right: 10px;
+            bottom: 10px;
+            width: 42px;
+            height: 42px;
+            border: 0;
+            border-radius: 999px;
+            background: #ef6c1f;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 980px) {
+            .topbar-inner {
+                padding: 14px 0;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .contact-strip {
+                justify-content: flex-start;
+                gap: 16px 24px;
+            }
+
+            .menu a {
+                padding: 14px 14px;
+                font-size: 14px;
+                line-height: 20px;
+            }
+
+            .brand-logo {
+                height: 46px;
+                max-width: min(280px, 78vw);
+            }
+
+            .contact-icon {
+                width: 16px;
+                height: 16px;
+            }
+
+            .contact-icon .fa {
+                font-size: 15px;
+            }
+
+            .hero {
+                min-height: 175px;
+            }
+
+            .crumb {
+                font-size: 20px;
+                margin-top: 14px;
+            }
+
+            .crumb span {
+                font-size: 20px;
+            }
+
+            .content {
+                padding: 52px 0 54px;
+            }
+
+            .status {
+                font-size: 15px;
+                margin-top: 26px;
+            }
+
+            .meta,
+            .org-address,
+            .scope,
+            .details {
+                font-size: 16px;
+            }
+
+            .standard-label {
+                margin-top: 34px;
+            }
+
+            .cert-number-wrap {
+                margin-top: 38px;
+            }
+
+            .validity-panel {
+                margin-top: 24px;
+                padding-left: 14px;
+            }
+
+            .cta-band {
+                padding: 24px 0;
+            }
+
+            .cta-btn {
+                font-size: 16px;
+                padding: 10px 22px;
+            }
+
+            .footer-main {
+                padding: 44px 0;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .footer-title {
+                font-size: 26px;
+                margin-bottom: 8px;
+            }
+
+            .footer-main p,
+            .footer-main li,
+            .footer-main a,
+            .footer-main .small,
+            .newsletter-input,
+            .newsletter-btn,
+            .footer-bottom {
+                font-size: 16px;
+            }
+
+            .floating-mail {
+                width: 44px;
+                height: 44px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <div class="brand-group">
+                <img class="brand-logo" src="assets/logo.png" alt="SAGACI and IAF" />
+            </div>
+            <div class="contact-strip">
+                <div class="contact-item">
+                    <span class="contact-icon"><i class="fa fa-clock-o" aria-hidden="true"></i></span>
+                    <div>
+                        <p class="contact-label">Opening Time</p>
+                        <p class="contact-value">Mon-Sat: 10:00AM - 06:00PM</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon"><i class="fa fa-envelope" aria-hidden="true"></i></span>
+                    <div>
+                        <p class="contact-label">Email address</p>
+                        <p class="contact-value">info@sagacicert.com</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon"><i class="fa fa-phone" aria-hidden="true"></i></span>
+                    <div>
+                        <p class="contact-label">Phone</p>
+                        <p class="contact-value">+91 956047 2730</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="navbar">
+        <div class="container">
+            <ul class="menu">
+                <li><a class="active" href="#">Home</a></li>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Service</a></li>
+                <li><a href="#">Public Documents</a></li>
+                <li><a href="#">Certificate Search</a></li>
+                <li><a href="#">Careers</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Certificate Verification</h1>
+            <div class="crumb"><span>Home</span> › Certificate Verification</div>
+        </div>
+    </section>
+
+    <main class="content">
+        <div class="container">
+            <h2>Certificate Verification</h2>
+
+            <span class="status">Active</span>
+            <p class="meta">Organisation Name and Address:</p>
+
+            <p class="org-name">RUMUZ ALMUDON FOR CONSTRUCTIONS</p>
+            <p class="org-address">PO BOX: 4005, ALKHAMASHIYYAH, HAIL 55422 7108, SAUDI ARABIA<br />SAUDI ARABIA</p>
+
+            <p class="standard-label">Standard</p>
+            <p class="standard-value">ISO 9001:2015</p>
+
+            <div class="scope">
+                <strong>Certification Scope:</strong><br />
+                Public Construction of Non-Residential Buildings, Including (Schools, Hospitals,
+                Hotels ... etc.), Municipal Waste Collection Services, Waste Transportation,
+                Municipality, General Construction of Residential Buildings, Construction of
+                Roads, Streets, Sidewalks and Road Supplies, Construction of Bridges and Tunnels,
+                Line Extensions, Water between and within Cities and the Establishment of New
+                Networks, Repair and Maintenance of Roads, Streets, Sidewalks and Road Supplies,
+                Repair and Maintenance; Stations, Networks and Main Lines for Water Distribution,
+                Construction of Irrigation and Irrigation Canals and Main Water Storage Towers,
+                Construction of Dams, Repair and Maintenance of Bridges and Tunnels, Preparation
+                of Sites for Excavation and leveling, Extension of Electrical Wires.
+            </div>
+
+            <div class="cert-number-wrap">
+                <h3>Certificate Number</h3>
+                <p>IAS3112Q2715</p>
+            </div>
+
+            <div class="validity-panel">
+                <p>This certificate is valid From <strong>31/12/2021</strong> until <strong>30/12/2024</strong></p>
+                <p class="status-line">Current Status:<span class="status-pill">Active</span></p>
+            </div>
+        </div>
+    </main>
+
+    <section class="cta-band">
+        <div class="container cta-inner">
+            <p class="cta-text"><small>For Any</small> Certification, Training Needs <small>Or Other Query Feel Free
+                    To</small></p>
+            <button class="cta-btn">Contact Us</button>
+        </div>
+    </section>
+
+    <footer class="footer-main">
+        <div class="container footer-grid">
+            <div>
+                <h4 class="footer-title">Head Office</h4>
+                <p class="small">SAGACI CERTIFICATIONS PVT LTD</p>
+                <p>Phone: 011 4360-1911</p>
+                <p>Email: info@sagacicert.com</p>
+                <p>Address: Office No. 20, A-2/544B,<br />Shiva Arcade, Acharya Niketan, Mayur<br />Vihar Phase-1, Delhi
+                    - 110091, India</p>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Quick Links</h4>
+                <ul class="link-list">
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Public Documents</a></li>
+                    <li><a href="#">Client Search</a></li>
+                    <li><a href="#">Candidate Search</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Contact With Us</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Our Certification Service</h4>
+                <div class="service-grid">
+                    <ul class="link-list">
+                        <li><a href="#">ISO 9001</a></li>
+                        <li><a href="#">ISO 14001</a></li>
+                        <li><a href="#">ISO 45001</a></li>
+                        <li><a href="#">ISO 22000</a></li>
+                        <li><a href="#">ISO 22301</a></li>
+                        <li><a href="#">ISO 27001</a></li>
+                    </ul>
+                    <ul class="link-list">
+                        <li><a href="#">ISO 37001</a></li>
+                        <li><a href="#">ISO 50001</a></li>
+                        <li><a href="#">ISO 10002</a></li>
+                        <li><a href="#">ISO 13485</a></li>
+                        <li><a href="#">ISO 20000-1</a></li>
+                        <li><a href="#">ISO 21001</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Newslatter Subscribe</h4>
+                <p class="small">Subscribe to Our Newsletter:</p>
+                <input class="newsletter-input" type="email" placeholder="Your Email" />
+                <button class="newsletter-btn">Submit</button>
+            </div>
+        </div>
+    </footer>
+
+    <div class="footer-bottom">© 2026 All Right Reserved. Design &amp; Developed By SAGACI CERTIFICATIONS PRIVATE
+        LIMITED.</div>
+    <button class="floating-mail" aria-label="Contact">✉</button>
+    <button class="floating-top" aria-label="Back to top">⌃</button>
+</body>
+
+</html>
